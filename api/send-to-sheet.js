@@ -1,7 +1,7 @@
-const axios = require('axios');
+const axios = require("axios");
 
-const BLYNK_TOKEN = '0HxCTZ-kULtjM8-IW71oeOgaEaJmZJOF'; // Replace with your real token
-const SHEET_WEBHOOK = 'https://script.google.com/macros/s/YOUR-SHEET-ID/exec'; // Replace with your real Google Apps Script webhook
+const BLYNK_TOKEN = '0HxCTZ-kULtjM8-IW71oeOgaEaJmZJOF';
+const SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbyfoK2gdxwhg3Prw7gu8f8M08JO4O2ArYXxkFnoDJXrgtCaCZuSuyv0CBTiYfzEz7WU/exec';
 
 const dataMap = {
   "FREQUEN": "V0",
@@ -26,12 +26,14 @@ const dataMap = {
   "SWITCH": "V25"
 };
 
+function formatTimestamp(date) {
+  const pad = n => n.toString().padStart(2, '0');
+  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
 async function fetchBlynkValues() {
   const result = {
-    timestamp: new Date().toLocaleString("id-ID", {
-      timeZone: "Asia/Jakarta",
-      hour12: false
-    }).replace(',', '') // Format: 27/07/2025 22:07:00
+    timestamp: formatTimestamp(new Date())
   };
 
   for (const [label, vPin] of Object.entries(dataMap)) {
@@ -39,7 +41,7 @@ async function fetchBlynkValues() {
     try {
       const res = await axios.get(url);
       result[label] = res.data;
-    } catch {
+    } catch (err) {
       result[label] = "";
     }
   }
@@ -47,16 +49,17 @@ async function fetchBlynkValues() {
   return result;
 }
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Only GET allowed' });
+    return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
   try {
     const data = await fetchBlynkValues();
     await axios.post(SHEET_WEBHOOK, data);
-    return res.status(200).json({ success: true, sent: data });
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
+    res.status(200).json({ message: '✅ Data sent successfully', data });
+  } catch (error) {
+    console.error("❌ Error:", error.message);
+    res.status(500).json({ message: '❌ Failed to send data', error: error.message });
   }
-};
+}
