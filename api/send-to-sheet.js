@@ -1,9 +1,30 @@
 import axios from "axios";
 
-const BLYNK_TOKEN = '...';
-const SHEET_WEBHOOK = '...';
+const BLYNK_TOKEN = '0HxCTZ-kULtjM8-IW71oeOgaEaJmZJOF';
+const SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbyfoK2gdxwhg3Prw7gu8f8M08JO4O2ArYXxkFnoDJXrgtCaCZuSuyv0CBTiYfzEz7WU/exec';
 
-const dataMap = { /* your data map */ };
+const dataMap = {
+  "FREQUEN": "V0",
+  "V_RS": "V1",
+  "V_ST": "V2",
+  "V_TR": "V3",
+  "I_R": "V4",
+  "I_S": "V5",
+  "I_T": "V6",
+  "VAVE": "V7",
+  "IAVE": "V8",
+  "POWER FACTOR": "V9",
+  "P_Watt": "V10",
+  "Q_VAR": "V11",
+  "S_VA": "V12",
+  "HUBUNGAN GENERATOR": "V13",
+  "CURRENT UNBALANCED": "V14",
+  "ONload or OVERload": "V15",
+  "IN": "V16",
+  "VOLTAGE UNBALANCED": "V17",
+  "REGULASI TEGANGAN": "V18",
+  "SWITCH": "V25"
+};
 
 function formatTimestamp(date) {
   const pad = n => n.toString().padStart(2, '0');
